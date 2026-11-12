@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alliance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f4f6f8;
+  --sheet: #fdfdfc;
+  --ink: #2a2b2e;
+  --mut: #687178;
+  --graph: #d5e0e8;
+  --rule: #c2d6e6;
+  --margin: #e8a7a7;
+  --red: #c94a4a;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 500 15px/26px 'Playpen Sans', cursive;
+  background-color: var(--paper);
+  background-image: 
+    linear-gradient(var(--graph) 1px, transparent 1px),
+    linear-gradient(90deg, var(--graph) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center top;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+.w {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 14px 32px;
+}
+h1, .hd {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+h1 {
+  font-size: 32px;
+  margin: 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.hd {
+  font-size: 19px;
+}
+.mono {
+  /* No monospace needed for handwritten look, but we can make it slightly smaller/different weight */
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mut);
+}
+.card {
+  background: var(--sheet);
+  border: 2px solid var(--ink);
+  border-radius: 2px 255px 3px 25px / 255px 5px 225px 3px;
+  padding: 12px 14px 16px 40px;
+  margin: 12px 0;
+  box-shadow: 2px 3px 0 rgba(42, 43, 46, 0.15);
+  position: relative;
+  /* Ruled paper background */
+  background-image: 
+    linear-gradient(90deg, var(--margin) 2px, transparent 2px),
+    linear-gradient(transparent 25px, var(--rule) 25px);
+  background-size: 100% 100%, 100% 26px;
+  background-position: 28px 0, 0 10px;
+  background-repeat: no-repeat, repeat;
+}
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.sp {
+  justify-content: space-between;
+}
+input, select {
+  width: 100%;
+  margin: 6px 0;
+  font: 500 15px 'Playpen Sans', cursive;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-bottom: 2px dashed var(--ink);
+  padding: 6px 2px;
+  border-radius: 0;
+}
+input:focus, select:focus {
+  outline: 0;
+  border-bottom-color: var(--red);
+  background: rgba(201, 74, 74, 0.05);
+}
+button {
+  font: 700 13px 'Playpen Sans', cursive;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--sheet);
+  border: 2px solid var(--ink);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  padding: 4px 12px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+button.p {
+  background: var(--red);
+  color: var(--sheet);
+  border-color: var(--ink);
+}
+button.on {
+  background: var(--ink);
+  color: var(--sheet);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+.m {
+  color: var(--mut);
+  font-size: 13px;
+}
+.err {
+  color: var(--red);
+  min-height: 18px;
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.bd {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: manipulation;
+  background: rgba(253, 253, 252, 0.6);
+  border: 2px solid var(--ink);
+  border-radius: 3px 255px 2px 25px / 255px 3px 225px 5px;
+  box-shadow: 3px 4px 0 rgba(42, 43, 46, 0.16);
+  margin-top: 12px;
+}
+.lg div {
+  padding: 0;
+  /* visually aligned to rules by inheritance */
+}
+#t {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink);
+  color: var(--sheet);
+  padding: 6px 16px;
+  display: none;
+  z-index: 9;
+  font: 700 14px 'Playpen Sans', cursive;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  border: 2px solid var(--sheet);
+  box-shadow: 2px 2px 0 rgba(42, 43, 46, 0.3);
+}
+.rules-list p { margin: 0 0 13px; }
+.rules-list ul { margin: 0 0 13px; padding-left: 20px; }
+.rules-list li { margin-bottom: 0px; }
+</style>
+</head>
+<body>
+<div class="w" id="app">Loading...</div>
+<div id="t"></div>
+<script>
+const DB = "https://test-2c408-default-rtdb.asia-southeast1.firebasedatabase.app";
+const ADMIN = "Kshitij", ADMIN_HASH = "631cd584651dd49b2aa1ba57f7b5f5176cfd2935640508b82a31f77f1854973c";
+const $ = s => document.querySelector(s);
+let me = null, G = null, U = {}, sel = null, view = "game", ready = false, msg = "", showReg = false, last = "";
+
+const sha = async t => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, "0")).join("");
+const hf = (n, p) => sha(n + ":" + p);
+const norm = s => { s = s || {}; s.N = s.N || 15; s.players = s.players || {}; s.votes = s.votes || {}; s.log = s.log || []; s.lastTick = s.lastTick || 0; return s; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* Highlighter ink palette */
+const COLS = ["#d94f3d", "#3b82b6", "#439464", "#d98a2b", "#8852a8", "#28929b", "#c94a7c", "#7a5940", "#7c942b", "#4e6475"];
+const hashStr = n => { let h = 2166136261; for (const c of n) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0; return h; };
+const col = n => COLS[hashStr(n) % COLS.length];
+
+/* Deterministic PRNG per player for distinct rough highlighter strokes */
+function prng(seed) {
+  let s = seed || 1;
+  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+}
+
+function markerSwatch(n, cx, cy, dead) {
+  const c = col(n);
+  const r = prng(hashStr(n));
+  const j = (amp) => (r() - 0.5) * amp;
+
+  if (dead) {
+    const x1 = (cx - 0.22 + j(0.04)).toFixed(2), y1 = (cy - 0.22 + j(0.04)).toFixed(2);
+    const x2 = (cx + 0.22 + j(0.04)).toFixed(2), y2 = (cy + 0.22 + j(0.04)).toFixed(2);
+    const x3 = (cx + 0.22 + j(0.04)).toFixed(2), y3 = (cy - 0.22 + j(0.04)).toFixed(2);
+    const x4 = (cx - 0.22 + j(0.04)).toFixed(2), y4 = (cy + 0.22 + j(0.04)).toFixed(2);
+    return `<g opacity=".65" style="mix-blend-mode:multiply">
+      <path d="M${x1} ${y1}L${x2} ${y2}M${x3} ${y3}L${x4} ${y4}" stroke="${c}" stroke-width=".1" stroke-linecap="round" fill="none"/>
+    </g>`;
+  }
+
+  /* Asymmetric organic polygon tighter to the square */
+  const pts = [
+    [cx - 0.26 + j(0.1), cy - 0.26 + j(0.1)],
+    [cx + 0.02 + j(0.08), cy - 0.30 + j(0.1)],
+    [cx + 0.28 + j(0.1), cy - 0.24 + j(0.1)],
+    [cx + 0.31 + j(0.08), cy + 0.03 + j(0.08)],
+    [cx + 0.25 + j(0.1), cy + 0.27 + j(0.1)],
+    [cx - 0.03 + j(0.08), cy + 0.29 + j(0.1)],
+    [cx - 0.28 + j(0.1), cy + 0.25 + j(0.1)],
+    [cx - 0.30 + j(0.08), cy - 0.02 + j(0.08)]
+  ].map(p => p[0].toFixed(2) + " " + p[1].toFixed(2));
+
+  /* Subtle second overlapping pass for uneven highlighter ink */
+  const s1x = (cx - 0.20 + j(0.08)).toFixed(2), s1y = (cy - 0.12 + j(0.08)).toFixed(2);
+  const s2x = (cx + 0.22 + j(0.08)).toFixed(2), s2y = (cy - 0.08 + j(0.08)).toFixed(2);
+  const s3x = (cx - 0.18 + j(0.08)).toFixed(2), s3y = (cy + 0.12 + j(0.08)).toFixed(2);
+  const s4x = (cx + 0.20 + j(0.08)).toFixed(2), s4y = (cy + 0.14 + j(0.08)).toFixed(2);
+
+  return `<g style="mix-blend-mode:multiply">
+    <path d="M${pts[0]}L${pts.slice(1).join("L")}Z" fill="${c}" fill-opacity=".3" stroke="${c}" stroke-width=".05" stroke-linejoin="round" stroke-opacity=".5"/>
+    <path d="M${s1x} ${s1y}L${s2x} ${s2y}M${s3x} ${s3y}L${s4x} ${s4y}" stroke="${c}" stroke-width=".15" stroke-linecap="round" stroke-opacity=".25" fill="none"/>
+  </g>`;
+}
+
+function rangeSquares(n, p, isSelected) {
+  if (!p || p.dead) return "";
+  const c = col(n);
+  const op = isSelected ? ".65" : ".32";
+  const fillOp = isSelected ? ".08" : ".03";
+  let out = "";
+  for (let x = 0; x < G.N; x++) {
+    for (let y = 0; y < G.N; y++) {
+      if (x === p.x && y === p.y) continue;
+      if (inR(p, { x, y })) {
+        out += `<rect x="${(x + 0.09).toFixed(2)}" y="${(y + 0.09).toFixed(2)}" width=".82" height=".82" rx=".06" fill="${c}" fill-opacity="${fillOp}" stroke="${c}" stroke-width=".06" stroke-opacity="${op}"/>`;
+      }
+    }
+  }
+  return out;
+}
+
+function toast(t) {
+  const e = $("#t");
+  e.textContent = t;
+  e.style.display = "block";
+  clearTimeout(toast.k);
+  toast.k = setTimeout(() => e.style.display = "none", 2200);
+}
+
+const at = (s, x, y) => Object.entries(s.players).find(([n, p]) => p.x == x && p.y == y);
+
+/* Range is a square grid around player (Chebyshev distance) */
+const inR = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) <= a.r;
+const adj = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) == 1;
+
+function freeCell(s) {
+  const c = [];
+  for (let x = 0; x < s.N; x++)
+    for (let y = 0; y < s.N; y++)
+      if (!at(s, x, y) && !(s.heart && s.heart.x == x && s.heart.y == y)) c.push({ x, y });
+  return c[Math.random() * c.length | 0] || null;
+}
+
+/* Finds a cell that is completely out of range of every existing player */
+function freeSafeCell(s) {
+  const c = [];
+  for (let x = 0; x < s.N; x++) {
+    for (let y = 0; y < s.N; y++) {
+      if (!at(s, x, y) && !(s.heart && s.heart.x == x && s.heart.y == y)) {
+        let safe = true;
+        for (const n in s.players) {
+          const p = s.players[n];
+          if (!p.dead && inR(p, { x, y })) { safe = false; break; }
+        }
+        if (safe) c.push({ x, y });
+      }
+    }
+  }
+  return c.length ? c[Math.random() * c.length | 0] : null;
+}
+
+const per = () => Math.floor((Date.now() + 19800000 - 43200000) / 864e5);
+
+function tick(s) {
+  const p = per();
+  if (s.lastTick >= p) return;
+  for (let q = s.lastTick + 1; q <= p && q <= s.lastTick + 7; q++) {
+    const wd = new Date(q * 864e5).getUTCDay();
+    if (wd == 0 || wd == 6) continue;
+    const cnt = {};
+    Object.values(s.votes).forEach(t => cnt[t] = (cnt[t] || 0) + 1);
+    let top = null, m = 0;
+    for (const t in cnt) if (cnt[t] > m) { m = cnt[t]; top = t; }
+    for (const n in s.players) {
+      const x = s.players[n];
+      if (!x.dead && n !== top) x.ap++;
+    }
+    s.log.push("Noon: +1 AP" + (top ? ` (${top} haunted)` : ""));
+    s.votes = {};
+  }
+  s.votes = {};
+  s.heart = freeCell(s);
+  if (s.heart) s.log.push("Heart spawned");
+  s.lastTick = p;
+}
+
+function addPlayer(s, n) {
+  if (s.players[n]) return;
+  s.N = s.N || 15;
+  let c = freeSafeCell(s);
+  let expanded = false;
+  
+  while (!c) {
+    s.N++;
+    expanded = true;
+    c = freeSafeCell(s);
+  }
+  
+  s.players[n] = { x: c.x, y: c.y, h: 3, ap: 0, r: 2, dead: false };
+  if (!s.lastTick) s.lastTick = per();
+  s.log.push(`${n} joined${expanded ? " (board expanded)" : ""}`);
+}
+
+async function act(fn) {
+  try {
+    const r = await fetch(DB + "/game.json");
+    if (!r.ok) { toast("Read error"); return false; }
+    const s = norm(await r.json());
+    const e = fn(s);
+    if (e) { toast(e); return false; }
+    s.log = s.log.slice(-40);
+    const w = await fetch(DB + "/game.json", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(s)
+    });
+    if (w.ok) { G = s; render(); return true; }
+    toast("Save failed");
+    return false;
+  } catch (x) {
+    toast("Network error");
+    return false;
+  }
+}
+
+const doMove = (x, y) => act(s => {
+  const p = s.players[me.name];
+  if (p.dead) return "Dead";
+  if (p.ap < 1) return "No AP";
+  if (!adj(p, { x, y }) || at(s, x, y)) return "Invalid move";
+  p.ap--; p.x = x; p.y = y;
+  if (s.heart && s.heart.x == x && s.heart.y == y) {
+    p.h++; s.heart = null;
+    s.log.push(`${me.name} took heart`);
+  }
+}).then(ok => { if (ok) sel = null; render(); });
+
+const doShoot = t => act(s => {
+  const p = s.players[me.name], q = s.players[t];
+  if (p.dead || q.dead) return "Invalid target";
+  if (p.ap < 1) return "No AP";
+  if (!inR(p, q)) return "Out of range";
+  p.ap--; q.h--;
+  if (q.h <= 0) {
+    q.h = 0; q.dead = true; p.ap += q.ap; q.ap = 0;
+    s.log.push(`${me.name} eliminated ${t}`);
+  } else {
+    s.log.push(`${me.name} hit ${t}`);
+  }
+});
+
+const doGift = (t, k) => act(s => {
+  const p = s.players[me.name], q = s.players[t];
+  if (p.dead) return "Dead";
+  if (!inR(p, q)) return "Out of range";
+  
+  if (k == "h") {
+    if (p.h < 1) return "No Hearts left";
+    p.h--;
+    const sac = (p.h === 0);
+    
+    if (q.dead) { 
+      q.dead = false; q.h = 1; q.ap = 0; 
+      s.log.push(`${me.name} revived ${t}${sac ? " (SACRIFICE!)" : ""}`); 
+    } else { 
+      q.h++; 
+      s.log.push(`${me.name} sent a Heart to ${t}${sac ? " (SACRIFICE!)" : ""}`); 
+    }
+    
+    if (sac) {
+      p.dead = true;
+      q.ap += p.ap; // AP transfers to the person you helped
+      p.ap = 0;
+    }
+  } else {
+    if (q.dead) return "Target is dead";
+    if (p.ap < 1) return "No AP";
+    p.ap--; q.ap++;
+    s.log.push(`${me.name} sent AP to ${t}`);
+  }
+});
+
+const doBuy = k => act(s => {
+  const p = s.players[me.name];
+  if (p.dead) return "Dead";
+  if (p.ap < 3) return "Need 3 AP";
+  p.ap -= 3;
+  if (k == "h") p.h++; else p.r++;
+  s.log.push(`${me.name} upgraded ${k == "h" ? "Hearts" : "range"}`);
+});
+
+const doVote = t => t && act(s => {
+  if (!s.players[me.name].dead) return "Only dead vote";
+  s.votes[me.name] = t;
+}).then(ok => ok && toast("Vote recorded"));
+
+async function login(n, p) {
+  const h = await hf(n, p);
+  if (n === ADMIN) {
+    if (h !== ADMIN_HASH) { msg = "Invalid credentials"; return false; }
+  } else {
+    const u = U[n];
+    if (!u || u.pw !== h) { msg = "Invalid credentials"; return false; }
+    if (u.status === "pending") { msg = "Awaiting approval"; return false; }
+    if (u.status === "denied") { msg = "Access denied"; return false; }
+  }
+  me = { name: n, admin: n === ADMIN };
+  msg = "";
+  try { localStorage.setItem("alliance_auth", JSON.stringify({ n, p })); } catch (e) {}
+  if (me.admin && G && !G.players[n]) await act(s => { addPlayer(s, n); });
+  return true;
+}
+
+async function register(n, p) {
+  if (!/^[A-Za-z0-9_-]{2,16}$/.test(n)) { msg = "2-16 chars (letters, digits, _ -)"; return; }
+  if (p.length < 3) { msg = "Password too short"; return; }
+  if (n === ADMIN || U[n]) { msg = "Username taken"; return; }
+  try {
+    await fetch(`${DB}/users/${n}.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pw: await hf(n, p), status: "pending" })
+    });
+    msg = "Request submitted.";
+    showReg = false;
+    load();
+  } catch (e) { msg = "Request failed"; }
+}
+
+function logout() {
+  me = null;
+  try { localStorage.removeItem("alliance_auth"); } catch (e) {}
+  render();
+}
+
+async function approve(n, yes) {
+  await fetch(`${DB}/users/${n}.json`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: yes ? "approved" : "denied" })
+  });
+  U[n].status = yes ? "approved" : "denied";
+  if (yes) await act(s => { addPlayer(s, n); });
+  render();
+}
+
+function loginView() {
+  const opts = [ADMIN, ...Object.keys(U).filter(n => U[n].status === "approved")].map(n => `<option>${esc(n)}</option>`).join("");
+  return `<div class="card">
+    <div style="font-size:32px; font-weight:700; text-transform:uppercase; margin-bottom:12px;">Alliance</div>
+    ${showReg
+      ? `<input id="rn" placeholder="Username" autocapitalize="off">
+         <input id="rp" type="password" placeholder="Password">
+         <div class="row" style="margin-top:12px">
+           <button class="p" onclick="register($('#rn').value.trim(),$('#rp').value).then(render)">Register</button>
+           <button onclick="showReg=false;msg='';render()">Back</button>
+         </div>`
+      : `<select id="ln">${opts}</select>
+         <input id="lp" type="password" placeholder="Password">
+         <div class="row" style="margin-top:12px">
+           <button class="p" onclick="login($('#ln').value,$('#lp').value).then(render)">Enter</button>
+           <button onclick="showReg=true;msg='';render()">Register</button>
+         </div>`}
+    <div class="err">${esc(msg)}</div>
+  </div>`;
+}
+
+function rulesView() {
+  return `<div class="card rules-list">
+    <div class="hd" style="margin-bottom:12px;">Rules of Engagement</div>
+    
+    <p><b>Deployment:</b><br>
+    All players start at a random location on the grid, and have 3 Hearts and 0 Action Points (AP). At the start of the game, everyone has a range of 2 (can target anyone within 2 squares of them).</p>
+    
+    <p><b>Daily Action Points:</b><br>
+    Every 24 hours on a work day, everyone receives 1 AP. The exact time the point is given may vary.</p>
+    
+    <p><b>Available Actions:</b><br>
+    At any time you like, you can do one of the following:</p>
+    <ul>
+      <li><b>Move:</b> Move to an adjacent, unoccupied square (1 AP)</li>
+      <li><b>Shoot:</b> Shoot someone within your range (1 AP). Removes 1 heart.</li>
+      <li><b>Add Heart:</b> Upgrade your health (3 AP)</li>
+      <li><b>Upgrade Range:</b> Increase shooting range by 1 square (3 AP)</li>
+    </ul>
+
+    <p><b>Transfers & Gifting:</b><br>
+    Players are able to send gifts of Hearts or Action Points to any player currently within their range. Gifting does not require an extra AP (you just lose the Heart/AP you are giving). <i>You can gift your last heart to save someone, but you will die doing so!</i></p>
+    
+    <p><b>Death & The Jury:</b><br>
+    If a player is reduced to 0 Hearts, they are dead. Any AP the dead player had transfers to the player who killed them. Dead players remain on the board and are not removed.
+    <br>
+    Dead players can have a Heart sent to them. This revives the player, returning them to 1 Heart and 0 AP.
+    <br>
+    Dead players form a Jury. Each day they vote, and whoever receives the most votes will be 'haunted' and will not receive any AP for that day.</p>
+    
+    <p><b>Field Hearts:</b><br>
+    Once a day, at a random time, a heart will spawn on the field. The first player to move into the square containing the heart receives an additional heart.</p>
+
+    <p><b>Secrecy & Victory:</b><br>
+    Action points are secret! Probably a good idea to try and hide how many you have. 
+    The game ends when a clear 1st, 2nd, and 3rd place can be determined. Once there are 4 players left, they will see if they can agree on the placing.
+    <br><br>
+    <i>You can't win this game without making some friends and stabbing some backs. Probably.</i></p>
+  </div>`;
+}
+
+function board(p) {
+  let rng = "", marks = "", grid = "";
+  for (let i = 0; i <= G.N; i++) {
+    grid += `<path d="M${i} 0V${G.N}M0 ${i}H${G.N}" stroke="#98b5c9" stroke-width=".04" fill="none"/>`;
+  }
+
+  /* Always show your own attackable squares subtly */
+  rng += rangeSquares(me.name, p, false);
+
+  /* If a player is clicked, highlight the squares their range can attack in their color */
+  if (sel) {
+    const e = at(G, sel.x, sel.y);
+    if (e) {
+      const [sn, sq] = e;
+      if (sn !== me.name) rng += rangeSquares(sn, sq, true);
+      else rng = rangeSquares(me.name, p, true);
+    }
+  }
+
+  for (const [n, q] of Object.entries(G.players)) {
+    const cx = q.x + 0.5, cy = q.y + 0.5;
+    marks += markerSwatch(n, cx, cy, q.dead);
+  }
+
+  if (G.heart) {
+    const hx = G.heart.x + 0.5, hy = G.heart.y + 0.5;
+    marks += `<rect x="${(hx - 0.18).toFixed(2)}" y="${(hy - 0.18).toFixed(2)}" width=".36" height=".36" transform="rotate(45 ${hx} ${hy})" fill="#c94a4a" fill-opacity=".8"/>`;
+  }
+
+  const s = sel ? `<rect x="${(sel.x + 0.04).toFixed(2)}" y="${(sel.y + 0.04).toFixed(2)}" width=".92" height=".92" fill="none" stroke="#2a2b2e" stroke-width=".07" stroke-dasharray=".16 .15"/>` : "";
+  return `<svg class="bd" viewBox="0 0 ${G.N} ${G.N}" onclick="bc(event)">
+    <defs>
+      <filter id="bleed" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="9" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale=".028" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+    <g>${grid}</g>
+    <g filter="url(#bleed)">${rng}${marks}</g>
+    <g>${s}</g>
+  </svg>`;
+}
+
+function bc(e) {
+  const r = e.currentTarget.getBoundingClientRect();
+  sel = {
+    x: Math.min(G.N - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * G.N))),
+    y: Math.min(G.N - 1, Math.max(0, Math.floor((e.clientY - r.top) / r.height * G.N)))
+  };
+  render();
+}
+
+function gameView() {
+  const p = G.players[me.name];
+  if (!p) return `<div class="card mono">Not deployed.</div>`;
+  let panel = "";
+  if (sel) {
+    const e = at(G, sel.x, sel.y);
+    if (e) {
+      const [n, q] = e, self = n === me.name, ir = inR(p, q), can = !p.dead && !self && ir;
+      panel = `<div class="card">
+        <div class="row sp">
+          <span class="hd" style="color:${col(n)}; font-weight:700;">${esc(n)}${self ? " (you)" : ""}</span>
+          <span class="mono">${q.dead ? "DEAD" : `Hearts ${q.h} | RNG ${q.r}`}</span>
+        </div>
+        ${self ? "" : `<div class="row" style="margin-top:8px">
+          <button ${can && !q.dead && p.ap > 0 ? "" : "disabled"} onclick="doShoot('${n}')">Shoot (1 AP)</button>
+          <button ${can ? "" : "disabled"} onclick="doGift('${n}','h')">${q.dead ? "Revive (Send Heart)" : "Send Heart"}</button>
+          <button ${can && !q.dead && p.ap > 0 ? "" : "disabled"} onclick="doGift('${n}','a')">Send AP</button>
+        </div>`}
+      </div>`;
+    } else {
+      const ok = adj(p, sel) && !p.dead;
+      const hasH = G.heart && G.heart.x == sel.x && G.heart.y == sel.y;
+      panel = `<div class="card row sp">
+        <span class="mono">[${sel.x}, ${sel.y}]${hasH ? " — Heart" : ""}</span>
+        <button class="p" ${ok && p.ap > 0 ? "" : "disabled"} onclick="doMove(${sel.x},${sel.y})">Move (1 AP)</button>
+      </div>`;
+    }
+  }
+  const alive = Object.keys(G.players).filter(n => !G.players[n].dead);
+  const jury = p.dead ? `<div class="card">
+    <div class="row sp"><span class="hd">Jury Vote</span><span class="mono">${G.votes[me.name] ? "Target: " + esc(G.votes[me.name]) : "Unvoted"}</span></div>
+    <div class="row" style="margin-top:6px">
+      <select id="vt" style="flex:1">${alive.map(n => `<option>${esc(n)}</option>`).join("")}</select>
+      <button onclick="doVote($('#vt').value)">Cast</button>
+    </div>
+  </div>` : "";
+
+  return `<div class="card row sp mono">
+    <div>${p.dead ? "STATUS: DEAD" : `Hearts: ${p.h} | RNG: ${p.r}`}</div>
+    <div>AP: ${p.ap}</div>
+  </div>
+  ${board(p)}${panel}
+  <div class="row" style="margin:10px 0">
+    <button ${!p.dead && p.ap >= 3 ? "" : "disabled"} onclick="doBuy('h')">+1 Heart (3 AP)</button>
+    <button ${!p.dead && p.ap >= 3 ? "" : "disabled"} onclick="doBuy('r')">+1 RNG (3 AP)</button>
+  </div>
+  ${jury}
+  <div class="card lg">
+    <div class="hd" style="margin-bottom:8px">Log</div>
+    ${G.log.slice(-10).reverse().map(l => `<div>${esc(l)}</div>`).join("") || '<div class="m">No records</div>'}
+  </div>`;
+}
+
+function manageView() {
+  const pend = Object.keys(U).filter(n => U[n].status === "pending");
+  return `<div class="card">
+    <div class="hd" style="margin-bottom:8px">Pending Approvals</div>
+    ${pend.map(n => `<div class="row sp mono" style="margin-top:6px">
+      <span>${esc(n)}</span>
+      <span>
+        <button class="p" onclick="approve('${n}',true)">Approve</button>
+        <button onclick="approve('${n}',false)">Deny</button>
+      </span>
+    </div>`).join("") || '<div class="m">None</div>'}
+  </div>`;
+}
+
+function render() {
+  if (!ready) { $("#app").textContent = "Loading..."; return; }
+  const ae = document.activeElement;
+  if (!me && ae && (ae.tagName == "INPUT" || ae.tagName == "SELECT")) return;
+  if (!me) { $("#app").innerHTML = loginView(); return; }
+  const pc = Object.keys(U).filter(n => U[n].status === "pending").length;
+  $("#app").innerHTML = `<div class="row sp" style="margin-bottom:4px">
+    <h1>${esc(me.name)}</h1>
+    <div class="row">
+      <button class="${view == "game" ? "on" : ""}" onclick="view='game';render()">Board</button>
+      <button class="${view == "rules" ? "on" : ""}" onclick="view='rules';render()">Rules</button>
+      ${me.admin ? `<button class="${view == "manage" ? "on" : ""}" onclick="view='manage';render()">Admin${pc ? " (" + pc + ")" : ""}</button>` : ""}
+      <button onclick="logout()">Exit</button>
+    </div>
+  </div>` + (view == "rules" ? rulesView() : (view == "manage" && me.admin ? manageView() : gameView()));
+}
+
+async function load() {
+  try {
+    const r = await fetch(DB + "/.json");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = (await r.json()) || {};
+    const k = JSON.stringify(d);
+    U = d.users || {};
+    G = norm(d.game);
+    if (!ready) {
+      ready = true;
+      try {
+        const a = JSON.parse(localStorage.getItem("alliance_auth") || "null");
+        if (a) await login(a.n, a.p);
+      } catch (e) {}
+    }
+    if (me && Object.keys(G.players).length && G.lastTick < per()) await act(s => { tick(s); });
+    if (k !== last) { last = k; render(); }
+  } catch (e) {
+    if (!ready) {
+      ready = true;
+      $("#app").innerHTML = `<div class="card"><div class="hd">Database Unreachable</div><div class="err">${esc(e.message)}</div></div>`;
+    }
+  }
+}
+
+load();
+setInterval(load, 4000);
+</script>
+</body>
+</html>
